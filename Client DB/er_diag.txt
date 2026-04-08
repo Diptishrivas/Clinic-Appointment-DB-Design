@@ -1,0 +1,105 @@
+patient [icon: person, color: blue] {
+  patient_id serial (pk)
+  name       varchar
+  age        int
+  gender     varchar
+  phone      varchar
+  created_at timestamp
+}
+
+doctor [icon: stethoscope, color: pink] {
+  doctor_id           serial (pk)
+  name                varchar
+  specialization_id   int (FK)
+  experience_years    int
+  phone               varchar
+  created_at          timestamp
+  updated_at          timestamp
+}
+
+specialization [icon: hospital, color: orange] {
+  specialization_id serial (pk)
+  name              varchar
+  description       varchar
+}
+
+schedule [icon: clock, color: brown] {
+  schedule_id serial (pk)
+  doctor_id   int (FK)
+  day         varchar
+  start_time  time
+  end_time    time
+}
+
+appointment [icon: calendar, color: orange] {
+  appointment_id serial (pk)
+  patient_id     int (FK)
+  doctor_id      int (FK)
+  date_time      timestamp
+  status         enum('scheduled', 'completed', 'cancelled', 'no_show')
+  created_at     timestamp
+  updated_at     timestamp
+}
+
+consultation [icon: clipboard, color: purple] {
+  consultation_id serial (pk)
+  appointment_id  int (FK)
+  doctor_id       int (FK)
+  patient_id      int (FK)
+  diagnosis       varchar
+  notes           varchar
+  created_at      timestamp
+}
+
+test [icon: test-tube, color: green] {
+  test_id serial (pk)
+  name    varchar
+}
+
+prescription [icon: file-text, color: purple] {
+  prescription_id serial (pk)
+  consultation_id int (FK)
+  test_id         int (FK)
+  status          enum('active', 'completed')
+  created_at      timestamp
+}
+
+report [icon: bar-chart, color: teal] {
+  report_id       serial (pk)
+  prescription_id int (FK)
+  result          varchar
+  report_date     timestamp
+  status          enum('pending', 'ready')
+  created_at      timestamp
+}
+
+payment [icon: credit-card, color: yellow] {
+  payment_id       serial (pk)
+  patient_id       int (FK)
+  appointment_id   int (FK)
+  consultation_id  int (FK)
+  amount           decimal
+  status          enum('pending', 'completed', 'failed')
+  created_at       timestamp
+}
+
+patient.patient_id        > appointment.patient_id
+doctor.doctor_id          > appointment.doctor_id
+
+specialization.specialization_id > doctor.specialization_id
+
+doctor.doctor_id > schedule.doctor_id
+ 
+
+appointment.appointment_id > consultation.appointment_id
+patient.patient_id         > consultation.patient_id
+doctor.doctor_id           > consultation.doctor_id
+
+consultation.consultation_id > prescription.consultation_id
+test.test_id                 > prescription.test_id
+
+prescription.prescription_id > report.prescription_id
+
+patient.patient_id          > payment.patient_id
+appointment.appointment_id  > payment.appointment_id
+consultation.consultation_id > payment.consultation_id
